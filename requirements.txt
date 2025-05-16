@@ -1,0 +1,10 @@
+aiohttp==3.11.18
+aiohttp_socks==0.10.1
+async_tls_client==2.0.0
+curl_cffi==0.11.1
+eth_typing==5.2.1
+loguru==0.7.3
+pydantic==2.11.4
+questionary==2.1.0
+SQLAlchemy==2.0.41
+web3==7.11.1
