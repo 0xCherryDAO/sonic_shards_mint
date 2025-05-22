@@ -14,6 +14,7 @@ from src.models.route import Route
 from src.models.token import Token
 from src.utils.data.chains import chain_mapping
 from src.utils.proxy_manager import Proxy
+from src.utils.request_client.curl_cffi_client import CurlCffiClient
 from src.utils.user.account import Account
 
 
@@ -37,7 +38,40 @@ async def process_upgrade_bridge(route: Route):
     return await bridge.bridge()
 
 
+async def check_if_eligible(route: Route) -> tuple[bool, str]:
+    request_client = CurlCffiClient(proxy=route.wallet.proxy)
+    account = Account(private_key=route.wallet.private_key, proxy=route.wallet.proxy)
+    headers = {
+        'accept': '*/*',
+        'accept-language': 'fr-FR,fr;q=0.9',
+        'priority': 'u=1, i',
+        'referer': 'https://shards.soniclabs.com/',
+        'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+    }
+    response_json, status = await request_client.make_request(
+        method="GET",
+        url=f'https://shards.soniclabs.com/api/proof/{account.wallet_address}',
+        headers=headers
+    )
+    if status == 200:
+        proof = response_json['message']
+        if not proof:
+            return False, account.wallet_address
+        return True, account.wallet_address
+    return False, account.wallet_address
+
+
 async def process_relay_bridge(route: Route) -> Optional[bool]:
+    eligible, address = await check_if_eligible(route)
+    if not eligible:
+        logger.warning(f'[{address}] | Account is not eligible. No need to bridge.')
+        return None
     chains = RelayBridgeSettings.from_chain
     balances = await get_balances_for_chains(
         chains,
