@@ -16,3 +16,9 @@ class ClaimData:
 class UpgradeData:
     address: str = '0x3561607590e28e0848ba3B67074C676D6D1C9953'
     abi: str = open('./assets/abi/upgrade.json', 'r').read()
+
+
+@dataclass
+class RelayData:
+    address: str = None
+    abi: str = None

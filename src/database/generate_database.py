@@ -30,19 +30,22 @@ async def generate_database(
     tasks = []
     if BRIDGE: tasks.append('BRIDGE')
     if MINT_NFT: tasks.append('MINT_NFT')
+    if RELAY_BRIDGE: tasks.append('RELAY_BRIDGE')
 
     has_bridge = 'BRIDGE' in tasks
+    has_relay_bridge = 'RELAY_BRIDGE' in tasks
 
     proxy_index = 0
     for private_key in private_keys:
         other_tasks = [
             task for task in tasks if
-            task not in ['BRIDGE']
+            task not in ['BRIDGE', 'RELAY_BRIDGE']
         ]
         random.shuffle(other_tasks)
 
         tasks = (
                 (['BRIDGE'] if has_bridge else []) +
+                (['RELAY_BRIDGE'] if has_relay_bridge else []) +
                 other_tasks
         )
 

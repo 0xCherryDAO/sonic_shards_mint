@@ -13,5 +13,16 @@ PAUSE_BETWEEN_MODULES = [1, 2]
 RETRIES = 3  # Сколько раз повторять 'зафейленное' действие
 PAUSE_BETWEEN_RETRIES = 15  # Пауза между повторами
 
-BRIDGE = True  # FTM -> SONIC
-MINT_NFT = True  # https://shards.soniclabs.com/
+BRIDGE = False  # FTM -> SONIC
+RELAY_BRIDGE = False  # Настройка в RelayBridgeSettings
+MINT_NFT = False  # https://shards.soniclabs.com/
+
+
+class RelayBridgeSettings:
+    from_chain = ['BASE', 'ARB', 'OP']
+    to_chain = ['SONIC']
+
+    amount = [0.001, 0.002]  # Кол-во ETH [от, до]
+    use_percentage = False  # Использовать ли процент от баланса вместо amount
+    bridge_percentage = [0.01, 0.01]  # Процент от баланса. 0.1 - это 10%, 0.27 - это 27% и т.д.
+    min_s_balance = 10  # Минимальный баланс в сети SONIC. Если выше, то бридж сделан не будет.

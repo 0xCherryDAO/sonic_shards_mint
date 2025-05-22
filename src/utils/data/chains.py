@@ -52,6 +52,7 @@ SEPOLIA = Chain(
 )
 
 chain_mapping = {
+    'SONIC': SONIC,
     'FANTOM': FANTOM,
     'BASE': BASE,
     'ARBITRUM ONE': ARB,
